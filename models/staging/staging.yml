@@ -3,7 +3,7 @@ models :
   - name : dim_customers
     description : This model create a clean customers data
     columns :
-      - name: customerid
+      - name: customer_id
         description: customer ID which a Primary Key
         tests:
           - not_null
@@ -18,6 +18,7 @@ models :
           - unique
       - name : product_name
         description : Derived from description. On RAW data, some of the StockCode have more than 1 product_name, so I decided to use canonical method to clean and standardize the data.
+  
     
 
         
