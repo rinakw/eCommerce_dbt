@@ -43,4 +43,10 @@ models:
     marts:
       +materialized: table
       +transient: true
+seeds:
+  ecommerce_project :
+#   +materialized: view
+    country_list :
+      file : data/country_list.csv
+
       
