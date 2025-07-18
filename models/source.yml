@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: orders
+    description : this is a replica of the snowflake database 
+    database : analytics
+    schema : raw
+    tables:
+      - name: orders
+        description : raw invoice details
+
+
