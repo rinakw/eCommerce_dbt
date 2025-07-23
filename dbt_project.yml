@@ -48,5 +48,7 @@ seeds:
 #   +materialized: view
     country_list :
       file : data/country_list.csv
+    order_status:
+      file : data/order_status.csv
 
       
