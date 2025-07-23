@@ -1,0 +1,4 @@
+order_code, order_status
+C, Cancelled
+A, Adjusted
+X, Completed

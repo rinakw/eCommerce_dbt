@@ -8,15 +8,34 @@
 with 
 base as (
     select 
-        invoiceno , 
-        invoicedate, 
-        quantity, 
-        unitprice, 
-        customerid, 
-        country,
-        (quantity * unitprice) as trx_amt
+        o.invoiceno , 
+        o.invoicedate, 
+        o.quantity, 
+        o.unitprice, 
+        o.customerid, 
+        o.country,
+        (o.quantity * o.unitprice) as trx_amt,
+        case 
+            when substr(o.invoiceno,1,1) = 'C' then 'C'
+            when substr(o.invoiceno,1,1) = 'A' then 'A' 
+            else 'X'
+        end as invoice_prefix
     from
-        {{ source('orders', 'orders') }} 
+        {{ source('orders', 'orders') }} o
+    
+),
+
+add_status as (
+    select 
+        o.invoiceno , 
+        o.invoicedate,
+        o.customerid, 
+        o.country,
+        o.trx_amt,
+        s.order_status
+    from base o
+    left join {{ ref('order_status') }} s
+        on o.invoice_prefix =  s.order_code
 ),
 
 ref_country as (
@@ -30,14 +49,15 @@ ref_dates as (
 
 aggr as (
     select 
-        b.invoiceno ,
-        b.invoicedate, 
-        b.customerid,
-        b.country,
-        sum(b.trx_amt) as tot_amt
-    from base b
+        s.invoiceno ,
+        s.invoicedate, 
+        s.customerid,
+        s.country,
+        s.order_status,
+        sum(s.trx_amt) as tot_amt,
+    from add_status s
     group by 
-        1,2,3,4
+        1,2,3,4,5
 ),
 
 joined as(
@@ -45,8 +65,9 @@ joined as(
         a.invoiceno as order_id,
         a.invoicedate as order_date, 
         a.customerid as customer_id,
-        a.country,
         a.tot_amt,
+        a.order_status,
+        a.country,
         rc.iso_code,
         rc.region, 
         rc.sub_region, 
